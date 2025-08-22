@@ -27,6 +27,7 @@ if (process.env.FRONTEND_URL) {
 }
 
 const whitelist = new Set(urls)
+console.log('[CORS] allowAll=%s, whitelist=%o', allowAll, Array.from(whitelist))
 
 const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
