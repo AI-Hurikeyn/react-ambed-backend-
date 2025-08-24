@@ -8,13 +8,19 @@ import multer from 'multer';
 const app = express();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024, files: 8 } });
 
-// CORS: allow all origins (no credentials). Handles preflight.
-const corsOptions = {
-  origin: (origin: any, cb: any) => cb(null, true),
-  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-};
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+// CORS configuration
+app.use(cors({
+  origin: true,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Add CORP header to fix cross-origin resource policy
+app.use((req, res, next) => {
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  next();
+});
 
 // Middlewares
 app.use(helmet());
@@ -25,6 +31,15 @@ app.use(express.urlencoded({ extended: true }));
 
 // Health
 app.get('/health', (_req, res) => res.json({ success: true, status: 'ok' }));
+
+// Root route
+app.get('/', (_req, res) => {
+  res.json({ 
+    message: 'Magic Decor Backend API is running!', 
+    status: 'online',
+    timestamp: new Date().toISOString() 
+  });
+});
 
 // Pricing request
 app.post('/api/contact/pricing-request', upload.array('photos'), async (req, res) => {

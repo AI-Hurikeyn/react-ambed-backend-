@@ -11,13 +11,18 @@ const morgan_1 = __importDefault(require("morgan"));
 const multer_1 = __importDefault(require("multer"));
 const app = (0, express_1.default)();
 const upload = (0, multer_1.default)({ storage: multer_1.default.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024, files: 8 } });
-// CORS: allow all origins (no credentials). Handles preflight.
-const corsOptions = {
-    origin: (origin, cb) => cb(null, true),
-    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-};
-app.use((0, cors_1.default)(corsOptions));
-app.options('*', (0, cors_1.default)(corsOptions));
+// CORS configuration
+app.use((0, cors_1.default)({
+    origin: true,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+// Add CORP header to fix cross-origin resource policy
+app.use((req, res, next) => {
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    next();
+});
 // Middlewares
 app.use((0, helmet_1.default)());
 app.use((0, compression_1.default)());
@@ -26,6 +31,14 @@ app.use(express_1.default.json({ limit: '10mb' }));
 app.use(express_1.default.urlencoded({ extended: true }));
 // Health
 app.get('/health', (_req, res) => res.json({ success: true, status: 'ok' }));
+// Root route
+app.get('/', (_req, res) => {
+    res.json({
+        message: 'Magic Decor Backend API is running!',
+        status: 'online',
+        timestamp: new Date().toISOString()
+    });
+});
 // Pricing request
 app.post('/api/contact/pricing-request', upload.array('photos'), async (req, res) => {
     try {
