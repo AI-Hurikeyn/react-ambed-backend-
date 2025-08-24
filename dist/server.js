@@ -21,6 +21,9 @@ app.use((0, cors_1.default)({
 // Add CORP header to fix cross-origin resource policy
 app.use((req, res, next) => {
     res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();
 });
 // Middlewares
@@ -38,6 +41,10 @@ app.get('/', (_req, res) => {
         status: 'online',
         timestamp: new Date().toISOString()
     });
+});
+// Favicon route
+app.get('/favicon.ico', (_req, res) => {
+    res.status(204).end();
 });
 // Pricing request
 app.post('/api/contact/pricing-request', upload.array('photos'), async (req, res) => {

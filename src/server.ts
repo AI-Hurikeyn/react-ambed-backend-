@@ -19,6 +19,9 @@ app.use(cors({
 // Add CORP header to fix cross-origin resource policy
 app.use((req, res, next) => {
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   next();
 });
 
@@ -39,6 +42,11 @@ app.get('/', (_req, res) => {
     status: 'online',
     timestamp: new Date().toISOString() 
   });
+});
+
+// Favicon route
+app.get('/favicon.ico', (_req, res) => {
+  res.status(204).end();
 });
 
 // Pricing request
