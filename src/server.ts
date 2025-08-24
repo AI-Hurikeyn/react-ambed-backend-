@@ -26,7 +26,9 @@ app.use((req, res, next) => {
 });
 
 // Middlewares
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: false, // Disable CORP restrictions
+}));
 app.use(compression());
 app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
@@ -46,6 +48,8 @@ app.get('/', (_req, res) => {
 
 // Favicon route
 app.get('/favicon.ico', (_req, res) => {
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.status(204).end();
 });
 

@@ -27,7 +27,9 @@ app.use((req, res, next) => {
     next();
 });
 // Middlewares
-app.use((0, helmet_1.default)());
+app.use((0, helmet_1.default)({
+    crossOriginResourcePolicy: false, // Disable CORP restrictions
+}));
 app.use((0, compression_1.default)());
 app.use((0, morgan_1.default)('combined'));
 app.use(express_1.default.json({ limit: '10mb' }));
@@ -44,6 +46,8 @@ app.get('/', (_req, res) => {
 });
 // Favicon route
 app.get('/favicon.ico', (_req, res) => {
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    res.setHeader('Access-Control-Allow-Origin', '*');
     res.status(204).end();
 });
 // Pricing request
